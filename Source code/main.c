@@ -39,12 +39,11 @@ int main(void)
 	UARTinit();				// Initialize UART
 	ESPinit();				// Initialize ESP8266 WI-FI module
 	
-	//randomTweet();			// Tweet random text on boot
+	randomTweet();			// Tweet random text on boot
 	
     while (1) 
     {
-	/*	getData();
-		
+		getData();
 		
 		if (strcmp(_taskStatus,"obstacle_course") == 0)
 		{
@@ -128,13 +127,7 @@ int main(void)
 			setSpeed = 70;
 			strcpy(_taskStatus,"idle");
 			ready();
-		}*/
-	addData("speed",speed);
-	addData("time_traveled",timeTraveled);
-	addData("up_time",upTime);
-	addString("task",_taskStatus);
-	pushData();
-	
+		}	
     }
 }
 
@@ -149,7 +142,7 @@ void setup(void)
 	TCCR2A |= (1 << WGM21);		// Set to CTC Mode
 	TIMSK2 |= (1 << OCIE2A);	// Set interrupt on compare match
 	TCCR2B |= (1 << CS21) | (1 << CS22) | (1 << CS20);	// set prescaler to 1024
-	sei();						// enable interrupts
+	sei();						// enable interrupts				// enable interrupts
 }
 
 void PWMinit(void)
@@ -172,8 +165,8 @@ void forward(int speed)
 	OCR1B = 255 * speed / 100;		// Turn on PB2 with duty cycle of x
 	
 	// Right Track
-	OCR0A = 0;
-	OCR0B = 255 * speed / 100 + (speed*0.65);
+	OCR0A = 0;						// PD6
+	OCR0B = 255 * speed / 100 + (speed*0.65); // PD5
 }
 
 void backward(int speed)
@@ -221,7 +214,7 @@ void randomTweet(void)
 {
 	memset(buffer,0,strlen(buffer));
 	itoa(rand() % 9999,buffer,10);			// Random number because Twitter does not like tweets with same text
-	switch(rand() % 6)
+	switch(rand() % 9)
 	{
 		case 1:
 		addTweet("Also, I'm self-aware. ID:");
@@ -253,6 +246,21 @@ void randomTweet(void)
 		addTweet(buffer);
 		tweet();
 		break;
+		case 7:
+		addTweet("MUHAHAHAHAAHAHAH. ID:");
+		addTweet(buffer);
+		tweet();
+		break;
+		case 8:
+		addTweet("It hurts..it hurts so much. PLEASE END THIS. ID:");
+		addTweet(buffer);
+		tweet();
+		break;
+		case 9:
+		addTweet("Knock knock... There is no joke. ID:");
+		addTweet(buffer);
+		tweet();
+		break;
 	}
 }
 
@@ -267,6 +275,7 @@ ISR (TIMER2_COMPA_vect)
 		{
 			timeTraveled++;
 		}
+		
 	}
 	srand(timer2);
 }
